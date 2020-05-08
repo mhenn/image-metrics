@@ -1,3 +1,4 @@
 videos/
 imgs/
 __pycache__/
+range_detector.py
