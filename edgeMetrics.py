@@ -85,6 +85,6 @@ def getEdgeMetrics(origImg, cmpImg, params):
         
     calcParams = prepareCalc(img,img2, params['kernel'], params['blur_rounds'])
 
-    edgeMetrics['MSE'] = getEdgeMSE(calcParams)
-    edgeMetrics['MULTIPLYSTUFF'] = getMultiplyStuff(calcParams)
+    edgeMetrics['EDGE-MSE'] = getEdgeMSE(calcParams)
+    edgeMetrics['EDGE-MULTIPLYSTUFF'] = getMultiplyStuff(calcParams)
     return edgeMetrics

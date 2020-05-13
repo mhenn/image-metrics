@@ -52,22 +52,35 @@ def getPSNR(origImg,cmpImg):
     return 20 * np.log10(255/ MSE**0.5)
 
 
-#printBlobMetrics()
-#printEdgeMetrics()
+
+def getMetrics(params, origImg, cmpImg):
+    metrics = {}
+    metrics['PSNR'] = getPSNR(origImg, cmpImg) 
+    metrics['MSE'] = getMSE(origImg, cmpImg)
+    metrics['SSIM'] = getSSIM(origImg, cmpImg)
+    metrics['MSSSIM'] = getMSSSIM(origImg, cmpImg)
+    metrics.update(getEdgeMetrics(origImg, cmpImg, params))
+    metrics.update(getBlobMetrics(origImg, cmpImg, params))
+    return metrics
 
 
 frame = getFrames('videos/my_video-2.mkv', 1)[0]
 cmpFrame = getFrames('videos/newest_test.mp4', 1)[0]
 
 
+params = {}
+params['kernel'] = (7,7)
+params['blur_rounds'] = 1
+params['hsv_min'] = (0,110,79) 
+params['hsv_max'] = (24,255,255)
+params['kernel'] = (7,7)
+
+print(getMetrics(params, frame, cmpFrame))
 
 
 
 #playDetectedFrames('./videos/ball.avi', (0,110,79),(24,255,255))
-#print(getPSNR(frame,cmpFrame))
-#print(getMSE(frame,cmpFrame))
-#print(getSSIM(frame,cmpFrame))
-print(getMSSSIM(frame, cmpFrame))
+
 #cv2.imwrite('imgs/ball.jpg', ballFrames[300])
 #cv2.waitKey()
 
