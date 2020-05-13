@@ -1,12 +1,8 @@
 from frames import * 
 from edgeMetrics import *
 from blobMetrics import *
+from parameters import *
 
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  
-
-#import skvideo.measure.msssim as msssim
-from tensorflow.image import ssim_multiscale as msssim 
 from skimage import data, img_as_float
 from skimage.metrics import structural_similarity as ssim
 import numpy as np
@@ -17,8 +13,27 @@ import cv2
 def getSSIM(origImg, cmpImg):
     return  ssim(origImg, cmpImg,data_range=cmpImg.max() - cmpImg.min(), multichannel=True)
 
-def getMSSSIM(origImg, cmpImg):
-    return msssim(origImg, cmpImg,255).numpy()
+def getMSSSIM(origImg, cmpImg, weights):
+    width, height, channels = origImg.shape
+    msssim = 0
+    
+    if origImg.shape != cmpImg.shape:
+        return -1
+
+    i0 = cv2.cvtColor(origImg, cv2.COLOR_BGR2GRAY)
+    i1 = cv2.cvtColor(cmpImg, cv2.COLOR_BGR2GRAY)
+
+
+    for weight in weights:
+        width = int((width /2))
+        height = int((height / 2))
+
+        i0 = cv2.resize(i0, (width,height))
+        i1 = cv2.resize(i1, (width,height))
+        
+        msssim += getSSIM(i0,i1 ) * weight
+
+    return msssim
 
 
 def printEdgeMetrics():
@@ -58,7 +73,7 @@ def getMetrics(params, origImg, cmpImg):
     metrics['PSNR'] = getPSNR(origImg, cmpImg) 
     metrics['MSE'] = getMSE(origImg, cmpImg)
     metrics['SSIM'] = getSSIM(origImg, cmpImg)
-    metrics['MSSSIM'] = getMSSSIM(origImg, cmpImg)
+    metrics['MSSSIM'] = getMSSSIM(origImg, cmpImg, params.msssim_weights)
     metrics.update(getEdgeMetrics(origImg, cmpImg, params))
     metrics.update(getBlobMetrics(origImg, cmpImg, params))
     return metrics
@@ -67,20 +82,6 @@ def getMetrics(params, origImg, cmpImg):
 frame = getFrames('videos/my_video-2.mkv', 1)[0]
 cmpFrame = getFrames('videos/newest_test.mp4', 1)[0]
 
-
-params = {}
-params['kernel'] = (7,7)
-params['blur_rounds'] = 1
-params['hsv_min'] = (0,110,79) 
-params['hsv_max'] = (24,255,255)
-params['kernel'] = (7,7)
+params = Parameters()
 
 print(getMetrics(params, frame, cmpFrame))
-
-
-
-#playDetectedFrames('./videos/ball.avi', (0,110,79),(24,255,255))
-
-#cv2.imwrite('imgs/ball.jpg', ballFrames[300])
-#cv2.waitKey()
-

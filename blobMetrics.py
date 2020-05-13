@@ -26,19 +26,16 @@ def getBlobDetector(exParams):
 
     key = 'detector_params'
 
-    if key in list(exParams.keys()):
-        params = exParams[key]
-    else:
-        params = cv2.SimpleBlobDetector_Params()
-        params.minThreshold = 0
-        params.maxThreshold = 256
-        params.filterByArea = True
-        params.minArea = 300
-        params.maxArea = 20000
-        params.filterByCircularity = False
-        params.minCircularity = 0.1
-        params.filterByConvexity = False
-        params.minConvexity = 0.5
+    params = cv2.SimpleBlobDetector_Params()
+    params.minThreshold = 0
+    params.maxThreshold = 256
+    params.filterByArea = True
+    params.minArea = 300
+    params.maxArea = 20000
+    params.filterByCircularity = False
+    params.minCircularity = 0.1
+    params.filterByConvexity = False
+    params.minConvexity = 0.5
 
 
     ver = cv2.__version__.split('.')
@@ -49,15 +46,14 @@ def getBlobDetector(exParams):
 
 
 
-def blob_detect(img, params):
+def blob_detect(img, params, hsv_min,hsv_max,kernel):
 
-    hsv_min, hsv_max = params['hsv_min'], params['hsv_max']
 
     hsv = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
     mask = cv2.inRange(hsv, hsv_min, hsv_max)
  
-    kernel = np.ones(params['kernel'], np.uint8)
+    kernel = np.ones(kernel, np.uint8)
 
     mask = cv2.dilate(mask,kernel)
     mask = cv2.erode(mask,kernel)
@@ -100,8 +96,12 @@ def calculateMetrics(origKP, cmpKP):
 
 def getBlobMetrics(origImg, cmpImg, params):
 
-    k1 = blob_detect(origImg, params)
-    k2 = blob_detect(cmpImg, params)
+    hsv_min = params.blob_hsv_min
+    hsv_max = params.blob_hsv_max
+    kernel = params.blob_blur_kernel
+
+    k1 = blob_detect(origImg, params, hsv_min, hsv_max, kernel)
+    k2 = blob_detect(cmpImg, params, hsv_min, hsv_max, kernel)
 
     metrics = calculateMetrics(k1, k2)
     return metrics
