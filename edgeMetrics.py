@@ -4,12 +4,8 @@ import cv2
 
 
 def getWhitePixel(img):
-    c = 0
-    for x in range(img.shape[0]):
-        for y in range(img.shape[1]):
-            if img[x,y] > 0:
-                c+=1
-    return c
+    return np.where(img > 0, 1,0).sum()
+
 
 
 def getWhitePercentage(img):    
@@ -43,6 +39,8 @@ def naiveOverlayCmp(img,cmpImg, kernel, gaussRounds):
 
     c = 0
     dst = np.zeros(img.shape)
+    
+
     for x in range(width):
         for y in range(height):
             if i1[y,x].all() and i2[y,x].all() > 0 :
