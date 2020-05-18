@@ -65,14 +65,13 @@ def getEdgeResponse(img1, img2, kernel,rounds):
     return (2 * corr.sum()) / (totalWPCount + 1)
 
 
-def getEdgeMetrics(origImg, cmpImg, params):
+def getEdgeMetrics(origImg, cmpImg, params, metric):
 
     kernel = params.edge_blur_kernel
     rounds = params.edge_blur_rounds
     t1 = params.edge_canny_thresh1
     t2 = params.edge_canny_thresh2
 
-    edgeMetrics = {}
     i0, i1 = origImg.copy(), cmpImg.copy()
 
     if 'gray' in list(params.__dict__):
@@ -82,6 +81,6 @@ def getEdgeMetrics(origImg, cmpImg, params):
     img = cv2.Canny(i0, t1, t2)
     img2 = cv2.Canny(i1, t1, t2)        
 
-    edgeMetrics['EDGE-MSE'] = getEdgeMSE(i0,i1,kernel,rounds)
-    edgeMetrics['EDGE-RESPONSE'] = getEdgeResponse(i0,i1,kernel,rounds)
-    return edgeMetrics
+    metric.EDGEMSE.append(getEdgeMSE(i0,i1,kernel,rounds))
+    metric.EDGERESPONSE.append(getEdgeResponse(i0,i1,kernel,rounds))
+    return metric

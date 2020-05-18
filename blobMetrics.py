@@ -74,10 +74,9 @@ def getRatio(dividend, divisor):
     return dividend / divisor if dividend > 0 else 1 
 
 
-def calculateMetrics(origKP, cmpKP): 
+def calculateMetrics(origKP, cmpKP, metric): 
 
-    blobMetrics = {}
-    blobMetrics['blobratio'] = getRatio(len(origKP),len(cmpKP))
+    metric.BLOBRATIO.append(getRatio(len(origKP),len(cmpKP)))
 
     oKP = sorted(origKP, key=lambda x: x.size)
     cKP = sorted(cmpKP, key=lambda x: x.size)
@@ -88,13 +87,18 @@ def calculateMetrics(origKP, cmpKP):
         oPT = oKP.pt
         cPT = cKP.pt
 
-        blobMetrics['offsetX'] = abs(oPT[0] - cPT[0])
-        blobMetrics['offsetY'] = abs(oPT[1] - cPT[1])
-        blobMetrics['sizeRatio'] = circleArea(cKP.size/2) / circleArea(oKP.size/2)
-    return blobMetrics 
+        metric.OFFSETX.append( abs(oPT[0] - cPT[0]))
+        metric.OFFSETY.append( abs(oPT[1] - cPT[1]))
+        metric.SIZERATIO.append( circleArea(cKP.size/2) / circleArea(oKP.size/2))
+    else:
+        metric.OFFSETX.append( 0)
+        metric.OFFSETY.append( 0 )
+        metric.SIZERATIO.append( 0)
+
+    return metric 
 
 
-def getBlobMetrics(origImg, cmpImg, params):
+def getBlobMetrics(origImg, cmpImg, params, metric):
 
     hsv_min = params.blob_hsv_min
     hsv_max = params.blob_hsv_max
@@ -103,7 +107,6 @@ def getBlobMetrics(origImg, cmpImg, params):
     k1 = blob_detect(origImg, params, hsv_min, hsv_max, kernel)
     k2 = blob_detect(cmpImg, params, hsv_min, hsv_max, kernel)
 
-    metrics = calculateMetrics(k1, k2)
-    return metrics
+    return  calculateMetrics(k1, k2,metric)
 
 
