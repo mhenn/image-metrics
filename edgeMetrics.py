@@ -3,6 +3,9 @@ import cv2
 import matplotlib.pyplot as plt
 from collections import namedtuple
 
+
+edge_tuple = namedtuple("EDGE", ['EDGEMSE', 'EDGERESPONSE'])
+
 def getWhitePixel(img):
     return np.where(img > 0, 1,0).sum()
 
@@ -77,7 +80,6 @@ def getEdgeMetrics(origImg, cmpImg, params):
     
     img = cv2.Canny(i0, t1, t2)
     img2 = cv2.Canny(i1, t1, t2)      
-    edge_tuple = namedtuple("EDGE", ['EDGEMSE', 'EDGERESPONSE'])
     e_mse = getEdgeMSE(i0,i1,kernel,rounds)
     e_response = getEdgeResponse(i0,i1,kernel,rounds)
     return edge_tuple(e_mse, e_response)

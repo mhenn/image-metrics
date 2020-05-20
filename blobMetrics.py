@@ -2,6 +2,9 @@ import cv2
 import numpy as np
 from collections import namedtuple
 
+
+blob_tuple = namedtuple("BLOB", ['AMOUNTORIGINAL', 'AMOUNTRECONS', 'OFFSETX', 'OFFSETY', 'SIZERATIO'])
+
 def playDetectedFrames(path, hsv_min,hsv_max):
 
     cap = cv2.VideoCapture(path)
@@ -78,9 +81,6 @@ def getRatio(dividend, divisor):
 def calculateMetrics(origKP, cmpKP): 
 
 
-    blob_tuple = namedtuple("BLOB", ['RATIO', 'OFFSETX', 'OFFSETY', 'SIZERATIO'])
-    
-    ratio = (len(origKP), len(cmpKP))
     
     offsetx = 0
     offsety = 0
@@ -100,7 +100,7 @@ def calculateMetrics(origKP, cmpKP):
         offsety = abs(oPT[1] - cPT[1])
         sizeratio = circleArea(cKP.size/2) / circleArea(oKP.size/2)
 
-    return blob_tuple(ratio, offsetx, offsety, sizeratio)
+    return blob_tuple(len(origKP), len(cmpKP), offsetx, offsety, sizeratio)
 
 
 def getBlobMetrics(origImg, cmpImg, params):
