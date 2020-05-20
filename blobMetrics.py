@@ -89,16 +89,16 @@ def calculateMetrics(origKP, cmpKP):
     oKP = sorted(origKP, key=lambda x: x.size)
     cKP = sorted(cmpKP, key=lambda x: x.size)
     
-    if cKP and cKP:
+    if cKP and oKP:
         oKP = oKP[0]
         cKP = cKP[0]
 
         oPT = oKP.pt
         cPT = cKP.pt
         
-        offsetx.append( abs(oPT[0] - cPT[0]))
-        offsety.append( abs(oPT[1] - cPT[1]))
-        sizeratio.append( circleArea(cKP.size/2) / circleArea(oKP.size/2))
+        offsetx = abs(oPT[0] - cPT[0])
+        offsety = abs(oPT[1] - cPT[1])
+        sizeratio = circleArea(cKP.size/2) / circleArea(oKP.size/2)
 
     return blob_tuple(ratio, offsetx, offsety, sizeratio)
 

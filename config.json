@@ -20,7 +20,7 @@
    {
       "Name" : "MSSSIM",
       "Function": "getMSSSIM",
-      "Include" : "False",
+      "Include" : "True",
       "Parameters" : {
          "Weights" : [
                0.0448,

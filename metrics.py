@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 from collections import namedtuple
 import json
 
-from edgeMetrics import *
-from blobMetrics import *
-from standard_metrics import *
-from parameters import *
+from image_metrics.edgeMetrics import *
+from image_metrics.blobMetrics import *
+from image_metrics.standard_metrics import *
+from image_metrics.parameters import *
 
 
 
@@ -63,19 +63,7 @@ class Metric:
         for o,c in zip(origImgs, cmpImgs):
             for k  in self.metrics:
                 self.metrics[k].run(o, c)
-
-        return None #metric
-
-       
  
-    def printValues(self):
-        print(self.__dict__)
 
     def showValues(self):
-        vals = self.__dict__
-
-        for key in vals:
-            plt.plot(vals[key])
-            plt.ylabel(key)
-            plt.show()
-
+        pass
