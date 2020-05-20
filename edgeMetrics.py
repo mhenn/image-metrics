@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+from collections import namedtuple
 
 def getWhitePixel(img):
     return np.where(img > 0, 1,0).sum()
@@ -65,22 +66,18 @@ def getEdgeResponse(img1, img2, kernel,rounds):
     return (2 * corr.sum()) / (totalWPCount + 1)
 
 
-def getEdgeMetrics(origImg, cmpImg, params, metric):
+def getEdgeMetrics(origImg, cmpImg, params):
 
-    kernel = params.edge_blur_kernel
-    rounds = params.edge_blur_rounds
-    t1 = params.edge_canny_thresh1
-    t2 = params.edge_canny_thresh2
+    kernel, rounds, t1, t2 = params
 
     i0, i1 = origImg.copy(), cmpImg.copy()
 
-    if 'gray' in list(params.__dict__):
-        i0 = cv2.cvtColor(i0, cv2.COLOR_BGR2GRAY)
-        i1 = cv2.cvtColor( i1, cv2.COLOR_BGR2GRAY)
+    i0 = cv2.cvtColor(i0, cv2.COLOR_BGR2GRAY)
+    i1 = cv2.cvtColor( i1, cv2.COLOR_BGR2GRAY)
     
     img = cv2.Canny(i0, t1, t2)
-    img2 = cv2.Canny(i1, t1, t2)        
-
-    metric.EDGEMSE.append(getEdgeMSE(i0,i1,kernel,rounds))
-    metric.EDGERESPONSE.append(getEdgeResponse(i0,i1,kernel,rounds))
-    return metric
+    img2 = cv2.Canny(i1, t1, t2)      
+    edge_tuple = namedtuple("EDGE", ['EDGEMSE', 'EDGERESPONSE'])
+    e_mse = getEdgeMSE(i0,i1,kernel,rounds)
+    e_response = getEdgeResponse(i0,i1,kernel,rounds)
+    return edge_tuple(e_mse, e_response)

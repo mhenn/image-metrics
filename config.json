@@ -1,0 +1,55 @@
+{"Config":[{
+      "Name": "PSNR" ,
+      "Function": "getPSNR",
+      "Include" : "True",
+      "Parameters" : "None",
+      "Include" : "True"
+   },
+   {
+      "Name" : "MSE",
+      "Function": "getMSE",
+      "Include" : "True",
+      "Parameters" : "None"
+   },
+   {
+      "Name" : "SSIM",
+      "Function": "getSSIM",
+      "Include" : "True",
+      "Parameters" : "None"
+   },
+   {
+      "Name" : "MSSSIM",
+      "Function": "getMSSSIM",
+      "Include" : "False",
+      "Parameters" : {
+         "Weights" : [
+               0.0448,
+               0.2856,
+               0.3001, 
+               0.2363, 
+               0.1333
+            ]
+         }
+   },
+   {
+      "Name" : "EDGE",
+      "Function": "getEdgeMetrics",
+      "Include" : "True",
+      "Parameters" : {
+         "BLUR_KERNEL" : [3,3],
+         "BLUR_ROUNDS" : 1,
+         "CANNY_THRESH1" : 50,
+         "CANNY_THRESH2" : 200  
+      }
+   },
+   { 
+      "Name" : "BLOB",
+      "Function": "getBlobMetrics",
+      "Include" : "True",
+      "Parameters" : {
+            "HSV_MIN" : [0,110,79],
+            "HSV_MAX" : [24,255,255],
+            "BLUR_KERNEL" : [7,7]  
+      }
+   }]
+}

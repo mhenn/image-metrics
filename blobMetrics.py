@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from collections import namedtuple
 
 def playDetectedFrames(path, hsv_min,hsv_max):
 
@@ -74,39 +75,41 @@ def getRatio(dividend, divisor):
     return dividend / divisor if dividend > 0 else 1 
 
 
-def calculateMetrics(origKP, cmpKP, metric): 
+def calculateMetrics(origKP, cmpKP): 
 
-    metric.BLOBRATIO.append(getRatio(len(origKP),len(cmpKP)))
+
+    blob_tuple = namedtuple("BLOB", ['RATIO', 'OFFSETX', 'OFFSETY', 'SIZERATIO'])
+    
+    ratio = (len(origKP), len(cmpKP))
+    
+    offsetx = 0
+    offsety = 0
+    sizeratio = 0
 
     oKP = sorted(origKP, key=lambda x: x.size)
     cKP = sorted(cmpKP, key=lambda x: x.size)
+    
     if cKP and cKP:
         oKP = oKP[0]
         cKP = cKP[0]
 
         oPT = oKP.pt
         cPT = cKP.pt
+        
+        offsetx.append( abs(oPT[0] - cPT[0]))
+        offsety.append( abs(oPT[1] - cPT[1]))
+        sizeratio.append( circleArea(cKP.size/2) / circleArea(oKP.size/2))
 
-        metric.OFFSETX.append( abs(oPT[0] - cPT[0]))
-        metric.OFFSETY.append( abs(oPT[1] - cPT[1]))
-        metric.SIZERATIO.append( circleArea(cKP.size/2) / circleArea(oKP.size/2))
-    else:
-        metric.OFFSETX.append( 0)
-        metric.OFFSETY.append( 0 )
-        metric.SIZERATIO.append( 0)
-
-    return metric 
+    return blob_tuple(ratio, offsetx, offsety, sizeratio)
 
 
-def getBlobMetrics(origImg, cmpImg, params, metric):
+def getBlobMetrics(origImg, cmpImg, params):
 
-    hsv_min = params.blob_hsv_min
-    hsv_max = params.blob_hsv_max
-    kernel = params.blob_blur_kernel
+    hsv_min, hsv_max, kernel = params
 
     k1 = blob_detect(origImg, params, hsv_min, hsv_max, kernel)
     k2 = blob_detect(cmpImg, params, hsv_min, hsv_max, kernel)
 
-    return  calculateMetrics(k1, k2,metric)
+    return  calculateMetrics(k1, k2)
 
 
