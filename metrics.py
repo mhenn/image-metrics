@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 from collections import namedtuple
 import json
+import os
+import matplotlib.pyplot as plt
 
+from collections import deque
 from image_metrics.edgeMetrics import *
 from image_metrics.blobMetrics import *
 from image_metrics.standard_metrics import *
@@ -65,5 +68,45 @@ class Metric:
                 self.metrics[k].run(o, c)
  
 
-    def showValues(self):
-        pass
+    def __plotMeasurements(self, name, metric, path):
+        fig = plt.figure(figsize=(16, 8))
+        plt.title(name)
+
+        firstSample = metric.data[0]
+        fields = firstSample._fields
+        history = np.array(metric.data)
+        legends = []
+
+        for i, f in enumerate(fields):
+            average = np.average(history[:, i])
+            rolling_avg_window = deque(maxlen=30)
+            rolling_avg = []
+            # Compute rolling average over all data points
+            for data in history[:, i]:
+                rolling_avg_window.append(data)
+                rolling_avg.append(np.average(rolling_avg_window))
+
+            plt.plot(history[:, i])
+            plt.plot(rolling_avg, linestyle=':')
+            plt.plot(np.array([average]*len(rolling_avg)), linestyle="dotted",
+                    color="red")
+            legends.append(f + f"={average:.2f}")
+            legends.append("Rolling Average (30)")
+            legends.append("Average")
+
+        plt.legend(legends)
+
+        if path != '':
+            if not os.path.isdir(path):
+                os.mkdir(path)
+            plt.savefig(f'{path}/{name}_metrics.png' )
+        else:
+            plt.show()
+         
+
+    def plot(self, path):
+        for name, metric in self.metrics.items():
+            self.__plotMeasurements(name, metric, path)
+
+
+
